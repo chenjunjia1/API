@@ -147,3 +147,18 @@ class ApiUtils:
             return fomo_list_result
         else:
             raise ValueError(f"Failed to get FOMO list: {response.status_code}")
+
+    def get_feed_list(self):
+        feed_list_url = f"{self.base_url}/feed/api/feed/list"
+        feed_list_headers = self.get_user_info_headers()
+        data = {"pageSize": 10, "orderBy": 1}
+
+        response = requests.post(feed_list_url, headers=feed_list_headers, json=data)
+
+        if response.status_code == 200:
+            feed_list_result = response.text
+            return feed_list_result
+        else:
+            raise ValueError(f"Failed to get feed list: {response.status_code}")
+
+

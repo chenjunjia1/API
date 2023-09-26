@@ -47,3 +47,12 @@ class TestAPIs(unittest.TestCase):
         with allure.step("Get FOMO List"):
             fomo_list_result = self.api_utils.get_fomo_list()
             allure.attach("FOMO List Response", fomo_list_result, allure.attachment_type.TEXT)
+
+    @allure.feature("Get feed List")
+    @allure.story("Get feed List Information")
+    def test_get_feed_list(self):
+        with allure.step("Get feed List"):
+            feed_list_result = self.api_utils.get_feed_list()
+            allure.attach("feed List Response", feed_list_result, allure.attachment_type.TEXT)
+
+
