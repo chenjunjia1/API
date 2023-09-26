@@ -16,6 +16,10 @@ if __name__ == "__main__":
     test_runner = unittest.TextTestRunner(verbosity=2)
     test_result = test_runner.run(test_suite)
 
+    # 清除Allure报告缓存
+    clear_cache_command = ["allure", "clean"]
+    subprocess.run(clear_cache_command, shell=True)
+
     # 生成Allure报告
     generate_command = ["allure", "generate", "allure-results", "--clean"]
     subprocess.run(generate_command, shell=True)
