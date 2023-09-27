@@ -3,6 +3,7 @@ import random
 from web3 import Web3
 from eth_account import Account
 import time
+from my_logging import logger  # 导入日志记录器
 
 class ApiUtils:
     def __init__(self, base_url):
