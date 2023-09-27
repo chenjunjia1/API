@@ -13,13 +13,17 @@ class TestAPIs(unittest.TestCase):
     @allure.story("Publish Text Feed")
     def test_publish_feed_text(self):
         with allure.step("Publish Text Feed"):
-            self.api_utils.publish_feed(content_type=1)
+            for _ in range(3):
+                self.api_utils.publish_feed(content_type=1)
 
     @allure.feature("Publish Feed - Text with Image")
     @allure.story("Publish Text Feed with Image")
     def test_publish_feed_text_image(self):
         with allure.step("Publish Text Feed with Image"):
-            self.api_utils.publish_feed(content_type=2)
+            count = 0
+            while count < 3:
+                self.api_utils.publish_feed(content_type=2)
+                count += 1
 
     @allure.feature("Publish Feed - Text with Video")
     @allure.story("Publish Text Feed with Video")
