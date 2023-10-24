@@ -7,8 +7,9 @@ import random
 import allure
 import os
 import subprocess
+import threading
 
-BASE_URL = "https://dev-xplus.trytryc.com"
+BASE_URL = "https://uat-xplus.trytryc.com"
 HEADERS = {
     "Appver": "1.0.0",
     "Osver": "1.0.0",
@@ -240,4 +241,30 @@ class TestApiUtils(unittest.TestCase):
                     repost_result = self.api_utils.repost_feed(community_id, repost_feed_id, text)
 
 if __name__ == "__main__":
-    unittest.main()
+    # Create instances of your test classes
+    test1 = TestApiUtils("test_get_user_info")
+    test2 = TestApiUtils("test_red_envelope_feed_message_list")
+    test3 = TestApiUtils("test_publish_feed")
+    test4 = TestApiUtils("test_get_feed_list")
+    test5 = TestApiUtils("test_repost_feeds")
+
+    # Create threads for each test
+    thread1 = threading.Thread(target=test1.run)
+    thread2 = threading.Thread(target=test2.run)
+    thread3 = threading.Thread(target=test3.run)
+    thread4 = threading.Thread(target=test4.run)
+    thread5 = threading.Thread(target=test5.run)
+
+    # Start the threads
+    thread1.start()
+    thread2.start()
+    thread3.start()
+    thread4.start()
+    thread5.start()
+
+    # Wait for all threads to finish
+    thread1.join()
+    thread2.join()
+    thread3.join()
+    thread4.join()
+    thread5.join()
