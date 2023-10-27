@@ -8,8 +8,11 @@ import allure
 import os
 import subprocess
 import threading
+from apscheduler.schedulers.blocking import BlockingScheduler
+import logging
 
-BASE_URL = "https://uat-xplus.trytryc.com"
+
+BASE_URL = "https://dev-xplus.trytryc.com"
 HEADERS = {
     "Appver": "1.0.0",
     "Osver": "1.0.0",
@@ -17,7 +20,6 @@ HEADERS = {
     "Content-Type": "application/json",
     "Authorization": ""
 }
-
 
 class ApiUtils:
     def __init__(self, base_url):
@@ -109,7 +111,7 @@ class ApiUtils:
             "subscriptionIds": []
         }
         response = requests.post(publish_url, headers=publish_headers, json=data)
-        print(f"Publish Feed Response:", response.text)  # 打印发布动态响应
+        print(f"Publish Feed Response:", response.text)
 
         if response.status_code == 200:
             publish_result = response.json()
@@ -127,7 +129,7 @@ class ApiUtils:
         }
 
         response = requests.post(feed_list_url, headers=feed_list_headers, json=data)
-        print("Feed List Response:", response.text)  # 打印Feed列表响应
+        print("Feed List Response:", response.text)
 
         if response.status_code == 200:
             feed_list = response.json()
@@ -143,7 +145,7 @@ class ApiUtils:
             "communityId": community_id
         }
         response = requests.post(like_url, headers=like_headers, json=data)
-        print(f"Like Feed {feed_id} Response:", response.text)  # 打印点赞响应
+        print(f"Like Feed {feed_id} Response:", response.text)
 
         if response.status_code == 200:
             like_result = response.json()
@@ -241,30 +243,4 @@ class TestApiUtils(unittest.TestCase):
                     repost_result = self.api_utils.repost_feed(community_id, repost_feed_id, text)
 
 if __name__ == "__main__":
-    # Create instances of your test classes
-    test1 = TestApiUtils("test_get_user_info")
-    test2 = TestApiUtils("test_red_envelope_feed_message_list")
-    test3 = TestApiUtils("test_publish_feed")
-    test4 = TestApiUtils("test_get_feed_list")
-    test5 = TestApiUtils("test_repost_feeds")
-
-    # Create threads for each test
-    thread1 = threading.Thread(target=test1.run)
-    thread2 = threading.Thread(target=test2.run)
-    thread3 = threading.Thread(target=test3.run)
-    thread4 = threading.Thread(target=test4.run)
-    thread5 = threading.Thread(target=test5.run)
-
-    # Start the threads
-    thread1.start()
-    thread2.start()
-    thread3.start()
-    thread4.start()
-    thread5.start()
-
-    # Wait for all threads to finish
-    thread1.join()
-    thread2.join()
-    thread3.join()
-    thread4.join()
-    thread5.join()
+    unittest.main()

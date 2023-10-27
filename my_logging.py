@@ -1,6 +1,6 @@
 import os
 import logging
-from logging.handlers import TimedRotatingFileHandler
+from logging.handlers import RotatingFileHandler
 from config import BASE_URL  # 导入运行环境配置
 
 # 创建一个名为 "logs" 的文件夹，如果它不存在的话
@@ -12,14 +12,9 @@ if not os.path.exists(log_folder):
 logger = logging.getLogger("my_logger")
 logger.setLevel(logging.INFO)
 
-# 创建一个TimedRotatingFileHandler，按日期切换日志文件，但不使用backupCount参数
+# 创建一个RotatingFileHandler，按文件大小进行切割并保留5个备份文件
 log_file = os.path.join(log_folder, "test_log.log")
-
-# 在每次运行前清除日志文件内容
-with open(log_file, "w") as log_file_clear:
-    log_file_clear.write("")
-
-file_handler = TimedRotatingFileHandler(log_file, when="midnight", interval=1, backupCount=0, encoding='utf-8', delay=False, utc=False, atTime=None)
+file_handler = RotatingFileHandler(log_file, maxBytes=10*1024*1024, backupCount=5, encoding='utf-8')
 
 # 创建一个格式化器并设置日志记录格式
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
