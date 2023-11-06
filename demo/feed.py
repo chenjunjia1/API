@@ -24,6 +24,7 @@ comments = [
     "Understand yourself in order to better understanding others!",
 ]
 
+
 class ApiUtils:
     def __init__(self, base_url):
         self.base_url = base_url
@@ -83,7 +84,7 @@ class ApiUtils:
         community_list = user_info.get("data", {}).get("community", [])
         return [community["id"] for community in community_list]
 
-    def get_latest_dynamic_list(self, count=5):
+    def get_latest_dynamic_list(self, count=6):
         list_url = BASE_URL + "/feed/api/feed/list"
         list_headers = self.get_login_headers()
 
@@ -170,22 +171,42 @@ class ApiUtils:
         if response.status_code != 200:
             raise ValueError(f"发布视频动态请求失败: {response.status_code}")
 
-class TestApiUtils(unittest.TestCase):
+    def repost_dynamic(self, community_id, repost_feed_id, text):
+        repost_url = BASE_URL + "/feed/api/feed/repost"
+        repost_headers = self.get_login_headers()
+
+        data = {
+            "communityId": community_id,
+            "repostFeedId": repost_feed_id,
+            "text": text
+        }
+
+        response = requests.post(repost_url, headers=repost_headers, json=data)
+        print("Repost Dynamic Response:", response.text)
+
+        if response.status_code == 200:
+            repost_result = response.json()
+            repost_id = repost_result.get("data", {}).get("id", "")
+            return repost_id
+        else:
+            raise ValueError(f"转发动态请求失败: {response.status_code}")
+
+
+class TestDynamicActions(unittest.TestCase):
     def setUp(self):
         self.api = ApiUtils(BASE_URL)
-
-    def test_publish_and_comment(self):
         self.access_token = self.api.get_access_token()
-        community_ids = self.api.get_community_ids()
+        self.community_ids = self.api.get_community_ids()
+        self.assertTrue(len(self.community_ids) >= 6)
 
-        self.assertTrue(len(community_ids) >= 6)
-
+    def test_publish_interact_with_dynamic(self):
         text_dynamic_text = "Text Dynamic"
         image_dynamic_text = "Image Dynamic"
         video_dynamic_text = "Video Dynamic"
 
+        # 发布三种不同类型的动态
         for i in range(3):
-            community_id = community_ids[i]
+            community_id = self.community_ids[i]
 
             if i % 3 == 0:
                 self.api.publish_text_dynamic(community_id, text_dynamic_text)
@@ -197,20 +218,24 @@ class TestApiUtils(unittest.TestCase):
                 thumbnail_url = "https://xplus-img.trytryc.com/img/2023-10-27/17c0f2b1-c178-4f16-92cb-2ba0c9ba8393.png"
                 self.api.publish_video_dynamic(community_id, video_url, thumbnail_url, video_dynamic_text)
 
-        latest_dynamic_list = self.api.get_latest_dynamic_list(count=5)
+        # 等待5秒
+        time.sleep(5)
 
-        # 确保至少有五个社区和六个评论内容
-        self.assertTrue(len(latest_dynamic_list) >= 5)
-        self.assertTrue(len(comments) >= 6)  # 至少6个不同的评论内容
+        # 获取最近的动态
+        latest_dynamic_list = self.api.get_latest_dynamic_list(count=3)
 
-        # 针对前五条动态进行评论，每条动态评论一次
-        for i, dynamic in enumerate(latest_dynamic_list):
+        # 对每条动态进行一次转发和三次评论
+        for dynamic in latest_dynamic_list:
             feed_id = dynamic["id"]
-            content = comments[i]
 
-            community_id = community_ids[i]
+            for _ in range(3):
+                content = random.choice(comments)  # 随机选择一个评论内容
+                community_id = random.choice(self.community_ids)  # 使用不同社区
+                self.api.post_comment(feed_id, content, community_id)
 
-            self.api.post_comment(feed_id, content, community_id)
+            text = random.choice(comments)  # 随机选择一个评论内容
+            self.api.repost_dynamic(community_id, feed_id, text)
+
 
 if __name__ == "__main__":
     unittest.main()

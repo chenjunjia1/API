@@ -12,7 +12,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import logging
 
 
-BASE_URL = "https://dev-xplus.trytryc.com"
+BASE_URL = "https://uat-xplus.trytryc.com"
 HEADERS = {
     "Appver": "1.0.0",
     "Osver": "1.0.0",
