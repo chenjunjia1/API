@@ -236,6 +236,14 @@ class TestDynamicActions(unittest.TestCase):
             text = random.choice(comments)  # 随机选择一个评论内容
             self.api.repost_dynamic(community_id, feed_id, text)
 
+            # Add comments to the reposted dynamic
+            reposted_dynamic = self.api.get_latest_dynamic_list(count=1)[0]
+            reposted_feed_id = reposted_dynamic["id"]
+            for _ in range(3):
+                content = random.choice(comments)  # 随机选择一个评论内容
+                community_id = random.choice(self.community_ids)  # 使用不同社区
+                self.api.post_comment(reposted_feed_id, content, community_id)
+
 
 if __name__ == "__main__":
     unittest.main()
