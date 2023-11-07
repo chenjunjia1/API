@@ -191,6 +191,27 @@ class ApiUtils:
         else:
             raise ValueError(f"转发动态请求失败: {response.status_code}")
 
+    def like_feed_for_latest_dynamic(self, community_ids):
+        latest_dynamic_list = self.get_latest_dynamic_list(count=6)
+        feed_ids = [dynamic["id"] for dynamic in latest_dynamic_list]
+
+        like_url = BASE_URL + "/feed/api/feed/like/update/like"
+        like_headers = self.get_login_headers()
+
+        for i in range(len(feed_ids)):
+            community_id = community_ids[i % 3]  # 使用不同的社区，轮流选择
+
+            data = {
+                "feedId": feed_ids[i],
+                "communityId": community_id
+            }
+
+            response = requests.post(like_url, headers=like_headers, json=data)
+            print("Like Feed Response:", response.text)
+
+            if response.status_code != 200:
+                raise ValueError(f"点赞请求失败: {response.status_code}")
+
 
 class TestDynamicActions(unittest.TestCase):
     def setUp(self):
@@ -218,7 +239,6 @@ class TestDynamicActions(unittest.TestCase):
                 thumbnail_url = "https://xplus-img.trytryc.com/img/2023-10-27/17c0f2b1-c178-4f16-92cb-2ba0c9ba8393.png"
                 self.api.publish_video_dynamic(community_id, video_url, thumbnail_url, video_dynamic_text)
 
-        # 等待5秒
         time.sleep(5)
 
         # 获取最近的动态
@@ -244,6 +264,8 @@ class TestDynamicActions(unittest.TestCase):
                 community_id = random.choice(self.community_ids)  # 使用不同社区
                 self.api.post_comment(reposted_feed_id, content, community_id)
 
+        # 对前六条动态进行点赞
+        self.api.like_feed_for_latest_dynamic(self.community_ids)
 
 if __name__ == "__main__":
     unittest.main()
